@@ -259,7 +259,7 @@ echo ""
 # 安装服务器依赖
 echo "正在安装服务器依赖..."
 cd "$SERVER_DIR"
-npm install --production
+npm install
 echo -e "${GREEN}✓${NC} 服务器依赖安装完成"
 
 # 构建服务器
