@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: chiavow-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-chiavow}
+      MYSQL_USER: ${DB_USER:-chiavow_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-chiavow_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    networks:
+      - chiavow-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Server
+  api:
+    build: ./server
+    container_name: chiavow-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=${DB_USER:-chiavow_user}
+      - DB_PASSWORD=${DB_PASSWORD:-chiavow_password}
+      - DB_NAME=${DB_NAME:-chiavow}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    volumes:
+      - ./server/uploads:/app/uploads
+      - ./server/logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - chiavow-network
+
+  # Web Frontend
+  web:
+    build: ./client
+    container_name: chiavow-web
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - chiavow-network
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+
+networks:
+  chiavow-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  uploads:
+  logs:
