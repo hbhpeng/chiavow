@@ -104,7 +104,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import {
   getTripMessages,
   replyToTripMessage,
@@ -113,8 +112,6 @@ import {
   markTripMessageAsRead,
   type TripMessage
 } from '@/api/admin'
-
-const { t } = useI18n()
 
 const messages = ref<TripMessage[]>([])
 const loading = ref(false)
