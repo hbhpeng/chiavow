@@ -139,9 +139,30 @@ CREATE TABLE IF NOT EXISTS trip_message_replies (
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 管理员表
+CREATE TABLE IF NOT EXISTS admins (
+  id VARCHAR(36) PRIMARY KEY,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 创建默认管理员账户
 -- 用户名：jiahou
 -- 密码：qipeng
+INSERT INTO admins (id, username, password, email, created_at)
+VALUES (
+  UUID(),
+  'jiahou',
+  '$2b$10$/S3RH3/zeEoOac/Lb619y.3CrmRiZjX2Rh8TabqNS/8b6toAYDBIm',
+  'jiaqi@chiavow.com',
+  NOW()
+) ON DUPLICATE KEY UPDATE username=username;
+
+-- 同时在 users 表中创建管理员账户（用于兼容）
 -- 邮箱：jiaqi@chiavow.com
 INSERT INTO users (id, email, password, plain_password, username, role, created_at)
 VALUES (
