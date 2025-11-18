@@ -178,11 +178,14 @@ const minStartDate = computed(() => {
   return tomorrow.toISOString().split('T')[0]
 })
 
-const trips = ref<Trip[]>([
-  { city: '', startDate: '', endDate: '' },
-  { city: '', startDate: '', endDate: '' },
-  { city: '', startDate: '', endDate: '' }
-])
+// Initialize trips based on device type (mobile: 1, desktop: 3)
+const getInitialTrips = (): Trip[] => {
+  const isMobile = window.innerWidth < 768
+  const count = isMobile ? 1 : 3
+  return Array.from({ length: count }, () => ({ city: '', startDate: '', endDate: '' }))
+}
+
+const trips = ref<Trip[]>(getInitialTrips())
 
 const options = ref({
   numberOfTravelers: 1,
