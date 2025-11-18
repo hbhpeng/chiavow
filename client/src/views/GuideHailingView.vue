@@ -301,14 +301,18 @@ const handleSendMessage = async () => {
 
 <style scoped>
 .guide-hailing-view {
-  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-light);
+  overflow: hidden;
 }
 
 .header {
   background: white;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 .title {
@@ -322,6 +326,7 @@ const handleSendMessage = async () => {
   background: white;
   border-bottom: 1px solid var(--border-color);
   padding: 0 20px;
+  flex-shrink: 0;
 }
 
 .tab {
@@ -346,6 +351,9 @@ const handleSendMessage = async () => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .trips-list {

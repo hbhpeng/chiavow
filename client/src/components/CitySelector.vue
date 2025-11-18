@@ -1,16 +1,16 @@
 <template>
   <div class="city-selector">
-    <div class="city-selector-trigger" @click="showModal = true">
-      <span v-if="modelValue" class="selected-city">{{ getCityName(modelValue) }}</span>
+    <div class="city-selector-trigger" @click="openModal">
+      <span v-if="modelValue" class="selected-city">{{ getDisplayCityName(modelValue) }}</span>
       <span v-else class="placeholder">{{ placeholder }}</span>
       <span class="arrow">▼</span>
     </div>
 
-    <div v-if="showModal" class="city-modal" @click.self="showModal = false">
-      <div class="modal-content">
+    <div v-if="showModal" class="city-modal" @click.self="closeModal">
+      <div class="modal-content" @wheel.stop @touchmove.stop>
         <div class="modal-header">
           <h3>{{ t('guideHailing.selectCity') }}</h3>
-          <button class="close-btn" @click="showModal = false">✕</button>
+          <button class="close-btn" @click="closeModal">✕</button>
         </div>
 
         <div class="search-box">
@@ -24,7 +24,7 @@
 
         <div v-if="!searchQuery" class="index-bar">
           <button
-            v-for="letter in alphabet"
+            v-for="letter in availableLetters"
             :key="letter"
             :class="['index-btn', { active: selectedLetter === letter }]"
             @click="scrollToLetter(letter)"
@@ -33,7 +33,7 @@
           </button>
         </div>
 
-        <div class="cities-list" ref="citiesListRef">
+        <div class="cities-list" ref="citiesListRef" @wheel.stop @touchmove.stop>
           <template v-if="searchQuery">
             <div v-if="filteredCities.length === 0" class="no-results">
               {{ t('common.noResults') }}
@@ -44,8 +44,8 @@
               :class="['city-item', { selected: modelValue === city.id }]"
               @click="selectCity(city.id)"
             >
-              <span class="city-name">{{ city.name }}</span>
-              <span class="city-pinyin">{{ city.pinyin }}</span>
+              <span class="city-primary">{{ isEnglish ? city.pinyin : city.name }}</span>
+              <span class="city-secondary">{{ isEnglish ? city.name : city.pinyin }}</span>
             </button>
           </template>
           <template v-else>
@@ -62,8 +62,8 @@
                 :class="['city-item', { selected: modelValue === city.id }]"
                 @click="selectCity(city.id)"
               >
-                <span class="city-name">{{ city.name }}</span>
-                <span class="city-pinyin">{{ city.pinyin }}</span>
+                <span class="city-primary">{{ isEnglish ? city.pinyin : city.name }}</span>
+                <span class="city-secondary">{{ isEnglish ? city.name : city.pinyin }}</span>
               </button>
             </div>
           </template>
@@ -74,11 +74,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import cityData from '@/assets/city.json'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 interface Props {
   modelValue: string
@@ -97,6 +97,9 @@ const showModal = ref(false)
 const searchQuery = ref('')
 const selectedLetter = ref('')
 const citiesListRef = ref<HTMLElement | null>(null)
+
+// 判断当前语言是否为英文
+const isEnglish = computed(() => locale.value === 'en')
 
 // 从JSON文件加载所有城市数据并转换为扁平列表
 const cities = computed(() => {
@@ -119,6 +122,18 @@ const cities = computed(() => {
 
 // 字母表
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+// 只显示有城市的字母
+const availableLetters = computed(() => {
+  const letters = new Set<string>()
+  cities.value.forEach(city => {
+    const firstLetter = city.pinyin.charAt(0).toUpperCase()
+    if (alphabet.includes(firstLetter)) {
+      letters.add(firstLetter)
+    }
+  })
+  return alphabet.filter(letter => letters.has(letter))
+})
 
 // 按首字母分组
 const cityGroups = computed(() => {
@@ -147,15 +162,16 @@ const filteredCities = computed(() => {
   )
 })
 
-const getCityName = (cityId: string) => {
+// 根据语言显示城市名称
+const getDisplayCityName = (cityId: string) => {
   const city = cities.value.find(c => c.id === cityId)
-  return city ? city.name : cityId
+  if (!city) return cityId
+  return isEnglish.value ? city.pinyin : city.name
 }
 
 const selectCity = (cityId: string) => {
   emit('update:modelValue', cityId)
-  showModal.value = false
-  searchQuery.value = ''
+  closeModal()
 }
 
 const handleSearch = () => {
@@ -173,6 +189,29 @@ const scrollToLetter = async (letter: string) => {
     }
   }
 }
+
+// 关闭模态框时恢复滚动
+const closeModal = () => {
+  showModal.value = false
+  searchQuery.value = ''
+  document.body.style.overflow = ''
+}
+
+// 打开模态框时禁止背景滚动
+const openModal = () => {
+  showModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+// 监听模态框状态变化
+onMounted(() => {
+  // 初始化时检查
+})
+
+onUnmounted(() => {
+  // 组件卸载时恢复滚动
+  document.body.style.overflow = ''
+})
 </script>
 
 <style scoped>
@@ -285,27 +324,27 @@ const scrollToLetter = async (letter: string) => {
 }
 
 .index-bar {
-  padding: 12px 20px;
+  padding: 10px 20px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   border-bottom: 1px solid var(--border-color);
-  max-height: 120px;
-  overflow-y: auto;
+  background: var(--bg-light);
 }
 
 .index-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 4px;
-  background: var(--bg-light);
+  background: white;
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .index-btn:hover {
@@ -358,12 +397,12 @@ const scrollToLetter = async (letter: string) => {
   color: var(--primary-color);
 }
 
-.city-name {
+.city-primary {
   font-weight: 500;
   font-size: 1rem;
 }
 
-.city-pinyin {
+.city-secondary {
   font-size: 0.85rem;
   color: #999;
 }
@@ -379,14 +418,15 @@ const scrollToLetter = async (letter: string) => {
     max-height: 90vh;
   }
 
-  .index-bar {
-    max-height: 80px;
+  .index-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
   }
 
-  .index-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
+  .index-bar {
+    gap: 3px;
+    padding: 8px 16px;
   }
 }
 </style>
