@@ -170,12 +170,13 @@ const fileInput = ref<HTMLInputElement | null>(null)
 // Helper function to get full avatar URL
 const getAvatarUrl = (avatar: string | undefined) => {
   if (!avatar) return ''
-  // If it's already a full URL, return as is
+  // If it's already a full URL or data URL, return as is
   if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:')) {
     return avatar
   }
-  // If it's a relative path, prepend the API server URL
-  return `http://localhost:3001${avatar}`
+  // If it's a relative path (like /uploads/...), return as is
+  // Nginx will proxy /uploads to the backend
+  return avatar
 }
 
 const toggleEditMode = () => {
