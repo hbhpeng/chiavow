@@ -45,7 +45,6 @@
                 v-model="trip.startDate"
                 type="date"
                 :min="minStartDate"
-                :placeholder="t('guideHailing.startDate')"
                 @change="validateDates(trip)"
               />
               <span class="separator">-</span>
@@ -53,7 +52,6 @@
                 v-model="trip.endDate"
                 type="date"
                 :min="trip.startDate || minStartDate"
-                :placeholder="t('guideHailing.endDate')"
                 @change="validateDates(trip)"
               />
             </div>
@@ -535,6 +533,20 @@ const handleSendMessage = async () => {
 
 .date-range input::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
+}
+
+/* Show placeholder-like text when date input is empty */
+.date-range input[type="date"]:not(:focus):invalid {
+  color: transparent;
+}
+
+.date-range input[type="date"]:not(:focus):invalid::-webkit-datetime-edit {
+  color: #999;
+}
+
+/* For browsers that support :blank */
+.date-range input[type="date"]:blank {
+  color: #999;
 }
 
 .separator {
