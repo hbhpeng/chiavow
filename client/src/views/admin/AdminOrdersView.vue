@@ -139,8 +139,13 @@
             </div>
 
             <div class="detail-group">
-              <label>{{ $t('admin.orders.tailorMade') }}:</label>
-              <span class="detail-value">{{ selectedOrder.tailorMade ? 'Yes' : 'No' }}</span>
+              <label>{{ $t('admin.orders.medicalCompanion') }}:</label>
+              <span class="detail-value">{{ selectedOrder.medicalCompanion ? 'Yes' : 'No' }}</span>
+            </div>
+
+            <div class="detail-group">
+              <label>{{ $t('admin.orders.businessService') }}:</label>
+              <span class="detail-value">{{ selectedOrder.businessService ? 'Yes' : 'No' }}</span>
             </div>
           </div>
 

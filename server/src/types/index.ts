@@ -29,7 +29,8 @@ export interface Order {
   numberOfTravelers: number
   supplyVehicles: boolean
   freeItinerary: boolean
-  tailorMade: boolean
+  medicalCompanion: boolean
+  businessService: boolean
   totalAmount: number
   status: 'active' | 'cancelled' | 'paid'
   userRead: boolean

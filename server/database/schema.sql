@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS orders (
   number_of_travelers INT NOT NULL,
   supply_vehicles BOOLEAN DEFAULT FALSE,
   free_itinerary BOOLEAN DEFAULT FALSE,
-  tailor_made BOOLEAN DEFAULT FALSE,
+  medical_companion BOOLEAN DEFAULT FALSE,
+  business_service BOOLEAN DEFAULT FALSE,
   total_amount DECIMAL(10, 2) NOT NULL,
   status ENUM('active', 'paid', 'cancelled') DEFAULT 'active',
   user_read BOOLEAN DEFAULT TRUE,  -- 用户是否已读

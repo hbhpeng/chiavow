@@ -81,20 +81,6 @@
       </div>
 
       <div class="options-section">
-        <div class="input-group">
-          <label>
-            {{ t('guideHailing.travelers') }}
-            <span class="hint">{{ t('guideHailing.travelersLimit') }}</span>
-          </label>
-          <input
-            v-model.number="options.numberOfTravelers"
-            type="number"
-            min="1"
-            max="5"
-            placeholder="1"
-          />
-        </div>
-
         <div class="checkbox-group">
           <label class="checkbox-label">
             <input v-model="options.supplyVehicles" type="checkbox" />
@@ -114,12 +100,30 @@
 
         <div class="checkbox-group">
           <label class="checkbox-label">
-            <input v-model="options.tailorMade" type="checkbox" />
-            <span>
-              {{ t('guideHailing.tailorMade') }}
-              <span class="cost">{{ t('guideHailing.tailorMadeCost') }}</span>
-            </span>
+            <input v-model="options.medicalCompanion" type="checkbox" />
+            <span>{{ t('guideHailing.medicalCompanion') }}</span>
           </label>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input v-model="options.businessService" type="checkbox" />
+            <span>{{ t('guideHailing.businessService') }}</span>
+          </label>
+        </div>
+
+        <div class="input-group">
+          <label>
+            {{ t('guideHailing.travelers') }}
+            <span class="hint">{{ t('guideHailing.travelersLimit') }}</span>
+          </label>
+          <input
+            v-model.number="options.numberOfTravelers"
+            type="number"
+            min="1"
+            max="5"
+            placeholder="1"
+          />
         </div>
 
         <button class="match-btn" @click="handleMatch" :disabled="!isValid || loading">
@@ -200,7 +204,8 @@ const options = ref({
   numberOfTravelers: 1,
   supplyVehicles: false,
   freeItinerary: false,
-  tailorMade: false
+  medicalCompanion: false,
+  businessService: false
 })
 
 const loading = ref(false)
@@ -293,7 +298,8 @@ const handleMatch = async () => {
       numberOfTravelers: options.value.numberOfTravelers,
       supplyVehicles: options.value.supplyVehicles,
       freeItinerary: options.value.freeItinerary,
-      tailorMade: options.value.tailorMade
+      medicalCompanion: options.value.medicalCompanion,
+      businessService: options.value.businessService
     })
 
     router.push({ path: '/main/orders', query: { showContact: 'true' } })

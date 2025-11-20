@@ -57,8 +57,11 @@
             <div v-if="order.freeItinerary" class="detail-item">
               <span class="badge">🗺️ Free Itinerary</span>
             </div>
-            <div v-if="order.tailorMade" class="detail-item">
-              <span class="badge">✨ Tailor-made</span>
+            <div v-if="order.medicalCompanion" class="detail-item">
+              <span class="badge">🏥 Medical Companion</span>
+            </div>
+            <div v-if="order.businessService" class="detail-item">
+              <span class="badge">💼 Business Service</span>
             </div>
           </div>
 

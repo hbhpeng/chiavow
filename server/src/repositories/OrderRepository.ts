@@ -8,7 +8,8 @@ interface OrderRow extends RowDataPacket {
   number_of_travelers: number
   supply_vehicles: boolean
   free_itinerary: boolean
-  tailor_made: boolean
+  medical_companion: boolean
+  business_service: boolean
   total_amount: number
   status: 'active' | 'paid' | 'cancelled'
   user_read: boolean
@@ -71,15 +72,16 @@ export class OrderRepository {
 
       // Insert order
       await connection.query<ResultSetHeader>(
-        `INSERT INTO orders (id, user_id, number_of_travelers, supply_vehicles, free_itinerary, tailor_made, total_amount, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO orders (id, user_id, number_of_travelers, supply_vehicles, free_itinerary, medical_companion, business_service, total_amount, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           order.id,
           order.userId,
           order.numberOfTravelers,
           order.supplyVehicles,
           order.freeItinerary,
-          order.tailorMade,
+          order.medicalCompanion,
+          order.businessService,
           order.totalAmount,
           order.status
         ]
@@ -206,7 +208,8 @@ export class OrderRepository {
       numberOfTravelers: orderRow.number_of_travelers,
       supplyVehicles: Boolean(orderRow.supply_vehicles),
       freeItinerary: Boolean(orderRow.free_itinerary),
-      tailorMade: Boolean(orderRow.tailor_made),
+      medicalCompanion: Boolean(orderRow.medical_companion),
+      businessService: Boolean(orderRow.business_service),
       totalAmount: Number(orderRow.total_amount),
       status: orderRow.status,
       userRead: Boolean(orderRow.user_read),

@@ -210,10 +210,14 @@ router.get('/orders', adminAuthMiddleware, async (req: AdminAuthRequest, res: Re
           travelers: order.numberOfTravelers,
           supplyVehicles: order.supplyVehicles,
           freeItinerary: order.freeItinerary,
-          tailorMade: order.tailorMade,
+          medicalCompanion: order.medicalCompanion,
+          businessService: order.businessService,
           totalPrice: order.totalAmount,
           status: order.status,
-          createdAt: order.createdAt
+          userRead: order.userRead,
+          adminRead: order.adminRead,
+          createdAt: order.createdAt,
+          updatedAt: order.createdAt
         }
       })
     )

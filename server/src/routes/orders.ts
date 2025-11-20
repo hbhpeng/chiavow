@@ -14,7 +14,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
       numberOfTravelers,
       supplyVehicles,
       freeItinerary,
-      tailorMade
+      medicalCompanion,
+      businessService
     } = req.body
 
     if (!trips || trips.length === 0) {
@@ -35,7 +36,8 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
       numberOfTravelers,
       supplyVehicles: supplyVehicles || false,
       freeItinerary: freeItinerary || false,
-      tailorMade: tailorMade || false,
+      medicalCompanion: medicalCompanion || false,
+      businessService: businessService || false,
       totalAmount,
       status: 'active',
       userRead: true,  // User created it, so it's read for them
