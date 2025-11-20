@@ -561,6 +561,31 @@ const handleSendMessage = async () => {
   opacity: 1;
 }
 
+/* Hide default date input placeholder (yyyy/mm/dd) in Chrome */
+.date-input-wrapper input::-webkit-datetime-edit-text {
+  color: transparent;
+}
+
+.date-input-wrapper input::-webkit-datetime-edit-month-field {
+  color: transparent;
+}
+
+.date-input-wrapper input::-webkit-datetime-edit-day-field {
+  color: transparent;
+}
+
+.date-input-wrapper input::-webkit-datetime-edit-year-field {
+  color: transparent;
+}
+
+/* Show the actual date value when selected */
+.date-input-wrapper input:focus::-webkit-datetime-edit-text,
+.date-input-wrapper input:focus::-webkit-datetime-edit-month-field,
+.date-input-wrapper input:focus::-webkit-datetime-edit-day-field,
+.date-input-wrapper input:focus::-webkit-datetime-edit-year-field {
+  color: inherit;
+}
+
 .separator {
   color: #999;
   font-weight: bold;
