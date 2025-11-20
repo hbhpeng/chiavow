@@ -508,6 +508,33 @@ const handleSendMessage = async () => {
 
 .date-range input {
   flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  background: white;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.date-range input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Safari date input styling */
+.date-range input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.date-range input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.date-range input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .separator {
