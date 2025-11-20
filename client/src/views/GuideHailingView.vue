@@ -41,19 +41,29 @@
           <div class="input-group">
             <label>{{ t('guideHailing.duration') }}</label>
             <div class="date-range">
-              <input
-                v-model="trip.startDate"
-                type="date"
-                :min="minStartDate"
-                @change="validateDates(trip)"
-              />
+              <div class="date-input-wrapper">
+                <input
+                  v-model="trip.startDate"
+                  type="date"
+                  :min="minStartDate"
+                  @change="validateDates(trip)"
+                />
+                <span v-if="!trip.startDate" class="date-placeholder">
+                  {{ t('guideHailing.startDate') }}
+                </span>
+              </div>
               <span class="separator">-</span>
-              <input
-                v-model="trip.endDate"
-                type="date"
-                :min="trip.startDate || minStartDate"
-                @change="validateDates(trip)"
-              />
+              <div class="date-input-wrapper">
+                <input
+                  v-model="trip.endDate"
+                  type="date"
+                  :min="trip.startDate || minStartDate"
+                  @change="validateDates(trip)"
+                />
+                <span v-if="!trip.endDate" class="date-placeholder">
+                  {{ t('guideHailing.endDate') }}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -504,8 +514,13 @@ const handleSendMessage = async () => {
   gap: 8px;
 }
 
-.date-range input {
+.date-input-wrapper {
   flex: 1;
+  position: relative;
+}
+
+.date-input-wrapper input {
+  width: 100%;
   padding: 12px 16px;
   border: 2px solid var(--border-color);
   border-radius: 8px;
@@ -516,37 +531,34 @@ const handleSendMessage = async () => {
   appearance: none;
 }
 
-.date-range input:focus {
+.date-input-wrapper input:focus {
   outline: none;
   border-color: var(--primary-color);
 }
 
+.date-placeholder {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 1rem;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* Safari date input styling */
-.date-range input::-webkit-date-and-time-value {
+.date-input-wrapper input::-webkit-date-and-time-value {
   text-align: left;
 }
 
-.date-range input::-webkit-calendar-picker-indicator {
+.date-input-wrapper input::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.6;
 }
 
-.date-range input::-webkit-calendar-picker-indicator:hover {
+.date-input-wrapper input::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
-}
-
-/* Show placeholder-like text when date input is empty */
-.date-range input[type="date"]:not(:focus):invalid {
-  color: transparent;
-}
-
-.date-range input[type="date"]:not(:focus):invalid::-webkit-datetime-edit {
-  color: #999;
-}
-
-/* For browsers that support :blank */
-.date-range input[type="date"]:blank {
-  color: #999;
 }
 
 .separator {
