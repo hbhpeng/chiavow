@@ -41,29 +41,27 @@
           <div class="input-group">
             <label>{{ t('guideHailing.duration') }}</label>
             <div class="date-range">
-              <div class="date-input-wrapper">
-                <input
-                  v-model="trip.startDate"
-                  type="date"
-                  :min="minStartDate"
-                  @change="validateDates(trip)"
-                />
-                <span v-if="!trip.startDate" class="date-placeholder">
-                  {{ t('guideHailing.startDate') }}
-                </span>
-              </div>
+              <VueDatePicker
+                v-model="trip.startDate"
+                :placeholder="t('guideHailing.startDate')"
+                :min-date="minStartDate"
+                :enable-time-picker="false"
+                auto-apply
+                :format="formatDateDisplay"
+                model-type="yyyy-MM-dd"
+                @update:model-value="validateDates(trip)"
+              />
               <span class="separator">-</span>
-              <div class="date-input-wrapper">
-                <input
-                  v-model="trip.endDate"
-                  type="date"
-                  :min="trip.startDate || minStartDate"
-                  @change="validateDates(trip)"
-                />
-                <span v-if="!trip.endDate" class="date-placeholder">
-                  {{ t('guideHailing.endDate') }}
-                </span>
-              </div>
+              <VueDatePicker
+                v-model="trip.endDate"
+                :placeholder="t('guideHailing.endDate')"
+                :min-date="trip.startDate || minStartDate"
+                :enable-time-picker="false"
+                auto-apply
+                :format="formatDateDisplay"
+                model-type="yyyy-MM-dd"
+                @update:model-value="validateDates(trip)"
+              />
             </div>
           </div>
 
@@ -163,6 +161,8 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 import { createOrder } from '@/api/orders'
 import { createTripMessage } from '@/api/tripMessages'
 import type { TripSegment } from '@/api/orders'
@@ -183,7 +183,8 @@ const currentTab = ref<'planner' | 'message'>('planner')
 const minStartDate = computed(() => {
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow.toISOString().split('T')[0]
+  tomorrow.setHours(0, 0, 0, 0)
+  return tomorrow
 })
 
 // Initialize trips based on device type (mobile: 1, desktop: 3)
@@ -213,7 +214,7 @@ const messageSuccess = ref(false)
 
 const validateDates = (trip: Trip) => {
   if (trip.startDate) {
-    const startDate = new Date(trip.startDate)
+    const startDate = typeof trip.startDate === 'string' ? new Date(trip.startDate) : trip.startDate
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -225,8 +226,8 @@ const validateDates = (trip: Trip) => {
   }
 
   if (trip.startDate && trip.endDate) {
-    const startDate = new Date(trip.startDate)
-    const endDate = new Date(trip.endDate)
+    const startDate = typeof trip.startDate === 'string' ? new Date(trip.startDate) : trip.startDate
+    const endDate = typeof trip.endDate === 'string' ? new Date(trip.endDate) : trip.endDate
 
     if (endDate <= startDate) {
       error.value = 'End date must be after start date'
@@ -236,6 +237,23 @@ const validateDates = (trip: Trip) => {
   }
 
   error.value = ''
+}
+
+const formatDate = (date: Date | string): string => {
+  const d = typeof date === 'string' ? new Date(date) : date
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const formatDateDisplay = (date: Date | string): string => {
+  if (!date) return ''
+  const d = typeof date === 'string' ? new Date(date) : date
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 const isValid = computed(() => {
@@ -266,8 +284,8 @@ const handleMatch = async () => {
       .filter(trip => trip.city && trip.startDate && trip.endDate)
       .map(trip => ({
         city: trip.city,
-        startDate: trip.startDate,
-        endDate: trip.endDate
+        startDate: formatDate(trip.startDate),
+        endDate: formatDate(trip.endDate)
       }))
 
     await createOrder({
@@ -514,76 +532,9 @@ const handleSendMessage = async () => {
   gap: 8px;
 }
 
-.date-input-wrapper {
+.date-range > :first-child,
+.date-range > :last-child {
   flex: 1;
-  position: relative;
-}
-
-.date-input-wrapper input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-  background: white;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.date-input-wrapper input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.date-placeholder {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #999;
-  font-size: 1rem;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Safari date input styling */
-.date-input-wrapper input::-webkit-date-and-time-value {
-  text-align: left;
-}
-
-.date-input-wrapper input::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.date-input-wrapper input::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
-}
-
-/* Hide default date input placeholder (yyyy/mm/dd) in Chrome */
-.date-input-wrapper input::-webkit-datetime-edit-text {
-  color: transparent;
-}
-
-.date-input-wrapper input::-webkit-datetime-edit-month-field {
-  color: transparent;
-}
-
-.date-input-wrapper input::-webkit-datetime-edit-day-field {
-  color: transparent;
-}
-
-.date-input-wrapper input::-webkit-datetime-edit-year-field {
-  color: transparent;
-}
-
-/* Show the actual date value when selected */
-.date-input-wrapper input:focus::-webkit-datetime-edit-text,
-.date-input-wrapper input:focus::-webkit-datetime-edit-month-field,
-.date-input-wrapper input:focus::-webkit-datetime-edit-day-field,
-.date-input-wrapper input:focus::-webkit-datetime-edit-year-field {
-  color: inherit;
 }
 
 .separator {
