@@ -1,5 +1,10 @@
 <template>
   <div class="main-view">
+    <header class="top-header">
+      <img src="/logo-small.svg" alt="Chiavow" class="header-logo" />
+      <span class="app-title">Chiavow</span>
+    </header>
+
     <div class="content">
       <router-view />
     </div>
@@ -117,6 +122,33 @@ onMounted(() => {
   flex-direction: column;
   height: 100vh;
   background: var(--bg-light);
+}
+
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  background: white;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.header-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.app-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .content {

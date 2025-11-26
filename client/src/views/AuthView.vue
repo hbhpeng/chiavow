@@ -2,6 +2,7 @@
   <div class="auth-view">
     <div class="auth-container">
       <div class="logo-section">
+        <img src="/logo.svg" alt="Chiavow Logo" class="logo-image" />
         <h1 class="app-name">{{ t('app.name') }}</h1>
         <div class="taglines">
           <p class="tagline">{{ t('app.tagline1') }}</p>
@@ -244,6 +245,22 @@ const handleSubmit = async (event?: Event) => {
 .logo-section {
   text-align: center;
   margin-bottom: 40px;
+}
+
+.logo-image {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .app-name {
