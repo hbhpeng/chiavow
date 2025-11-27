@@ -64,17 +64,26 @@ router.get('/users', adminAuthMiddleware, async (req: AdminAuthRequest, res: Res
 
     const { users, total } = await userRepository.findAll(page, limit, search)
 
+    // Get order count for each user
+    const usersWithOrderCount = await Promise.all(
+      users.map(async (user) => {
+        const ordersCount = await orderRepository.countByUserId(user.id)
+        return {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          avatar: user.avatar,
+          primaryLanguage: user.primaryLanguage,
+          secondaryLanguage: user.secondaryLanguage,
+          plainPassword: user.plainPassword,
+          createdAt: user.createdAt,
+          ordersCount
+        }
+      })
+    )
+
     res.json({
-      data: users.map(user => ({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        avatar: user.avatar,
-        primaryLanguage: user.primaryLanguage,
-        secondaryLanguage: user.secondaryLanguage,
-        plainPassword: user.plainPassword,
-        createdAt: user.createdAt
-      })),
+      data: usersWithOrderCount,
       total,
       page,
       limit,

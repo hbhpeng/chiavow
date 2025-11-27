@@ -229,6 +229,17 @@ export class OrderRepository {
     return rows[0]?.count || 0
   }
 
+  // Count total orders for a user
+  async countByUserId(userId: string): Promise<number> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT COUNT(*) as count
+       FROM orders
+       WHERE user_id = ?`,
+      [userId]
+    )
+    return rows[0]?.count || 0
+  }
+
   // Count unread orders for admin
   async countUnreadForAdmin(): Promise<number> {
     const [rows] = await pool.query<RowDataPacket[]>(
